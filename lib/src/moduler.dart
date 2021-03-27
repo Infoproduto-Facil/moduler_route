@@ -123,11 +123,6 @@ mixin Moduler {
     return pageRoute;
   }
 
-  // Route unknownRoute(RouteSettings route) {
-  //   return _pageRoute(
-  //       view: UnknownView(routeName: route.name!), name: "unknown");
-  // }
-
   PageRoute _pageRoute({
     required Widget view,
     RouteTransitionType? transitionType,
