@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 class UnknownRoute extends StatelessWidget {
   final String routeName;
 
-  const UnknownRoute({Key key, this.routeName}) : super(key: key);
+  const UnknownRoute({Key? key, required this.routeName}) : super(key: key);
 
   @override
   Widget build(BuildContext context) => Scaffold(
@@ -23,7 +23,7 @@ class UnknownRoute extends StatelessWidget {
                   style: TextStyle(fontSize: 16),
                 ),
               ),
-              OutlineButton.icon(
+              OutlinedButton.icon(
                 label: Text('Back'),
                 icon: Icon(Icons.arrow_back),
                 onPressed: () => Navigator.of(context).pop(),

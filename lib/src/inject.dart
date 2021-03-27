@@ -1,9 +1,10 @@
 part of 'moduler.dart';
 
 abstract class Inject {
-  static Object _parameter;
+  static Object? _parameter;
   static final List<Injector> _injections = [];
   static final Map<Type, dynamic> _objects = {};
+
   /// only for unit test purpose
   static final Map<Type, dynamic> _mocks = {};
 
@@ -14,12 +15,12 @@ abstract class Inject {
     }
 
     final injector = _injections
-        ?.firstWhere(
+        .firstWhere(
           (injector) => injector.type == T,
         )
-        ?.inject;
+        .inject;
 
-    final instance = injector(_parameter) as T;
+    final instance = injector(_parameter!) as T;
 
     _parameter = null;
 
