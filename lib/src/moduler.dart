@@ -3,7 +3,9 @@ import 'dart:io' show Platform;
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:moduler_route/presentation/unknown_view.dart';
 import 'package:moduler_route/src/module_route.dart';
+import 'package:moduler_route/src/modules/unknown_module.dart';
 import 'package:page_transition/page_transition.dart';
 
 import 'collection/module_stack.dart';
@@ -11,47 +13,47 @@ import 'injector.dart';
 import 'module.dart';
 import 'moduler_route_observer.dart';
 import 'route_transition_type.dart';
-import 'unknown_route.dart';
 
 part 'inject.dart';
 
 mixin Moduler {
   static final _modulesStack = StackModule();
 
-  List<Module?> get modules;
+  List<Module> get modules;
   List<Injector> get globalInjections;
 
   final ModulerRouteObserver modulerRouteObserver = ModulerRouteObserver(
     _modulesStack,
   );
 
-  Module? _module(String path) {
+  Module _module(String path) {
     final dividedPath = path.split("/");
     final modulePath = dividedPath.length > 1 ? dividedPath[0] : path;
 
     final module = modules.firstWhere(
-      (module) => module?.path == modulePath,
-      orElse: () => _modulesStack.top(),
+      (module) => module.path == modulePath,
+      orElse: () => UnknownModule(),
     );
 
     return module;
   }
 
-  ModuleRoute? _route(String path, Module module) {
+  ModuleRoute _route(String path, Module module) {
     if (path.endsWith("/")) {
       path = path.substring(0, path.length - 1);
     }
 
     return module.routes.firstWhere(
-      (route) => route?.path == path,
+      (route) => route.path == path,
       orElse: () => module.routes.firstWhere(
-          (route) => route?.path == "/" && module.path == path, orElse: () {
+          (route) => route.path == "/" && module.path == path, orElse: () {
         final dividedRoute = path.split("/")..removeAt(0);
         final routePath = dividedRoute.join("/");
 
         return module.routes.firstWhere(
-          (route) => route?.path == routePath,
-          orElse: () => null,
+          (route) => route.path == routePath,
+          orElse: () => ModuleRoute(
+              path: "/", builder: (_) => UnknownView(routeName: "Unknown")),
         );
       }),
     );
@@ -101,27 +103,12 @@ mixin Moduler {
 
   String initialRoute(String Function() initialPath) => initialPath();
 
-  Route _defaultRoute() {
-    return _pageRoute(
-      view: UnknownRoute(routeName: "unknown"),
-      name: "unknown",
-    );
-  }
-
   Route routeTo(RouteSettings routeSettings) {
     final module = _module(routeSettings.name!);
-
-    if (module == null) {
-      return _defaultRoute();
-    }
 
     _manageInjections(module);
 
     final route = _route(routeSettings.name!, module);
-
-    if (route == null){
-      return _defaultRoute();
-    }
 
     Inject._parameter = routeSettings.arguments!;
 
@@ -136,10 +123,10 @@ mixin Moduler {
     return pageRoute;
   }
 
-  Route unknownRoute(RouteSettings route) {
-    return _pageRoute(
-        view: UnknownRoute(routeName: route.name!), name: "unknown");
-  }
+  // Route unknownRoute(RouteSettings route) {
+  //   return _pageRoute(
+  //       view: UnknownView(routeName: route.name!), name: "unknown");
+  // }
 
   PageRoute _pageRoute({
     required Widget view,
