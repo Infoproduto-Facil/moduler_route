@@ -52,8 +52,7 @@ mixin Moduler {
 
         return module.routes.firstWhere(
           (route) => route.path == routePath,
-          orElse: () => ModuleRoute(
-              path: "/", builder: (_) => UnknownView(routeName: "Unknown")),
+          orElse: () => ModuleRoute(path: "/", builder: (_)=>UnknownView(routeName: "Unknown")),
         );
       }),
     );
@@ -103,6 +102,7 @@ mixin Moduler {
 
   String initialRoute(String Function() initialPath) => initialPath();
 
+
   Route routeTo(RouteSettings routeSettings) {
     final module = _module(routeSettings.name!);
 
@@ -121,6 +121,11 @@ mixin Moduler {
     );
 
     return pageRoute;
+  }
+
+  Route unknownRoute(RouteSettings route) {
+    return _pageRoute(
+        view: UnknownView(routeName: route.name!), name: "unknown");
   }
 
   PageRoute _pageRoute({
